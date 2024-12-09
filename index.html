@@ -12,17 +12,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            background-color: #f0f0f0;
         }
         h1 {
             color: #ff4500;
+            margin: 10px 0;
         }
         .control-buttons {
-            margin: 10px 0;
             display: flex;
+            justify-content: center;
             gap: 10px;
+            margin-bottom: 10px;
         }
         .control-buttons button {
-            padding: 10px;
+            padding: 10px 20px;
             font-size: 14px;
             border: none;
             border-radius: 5px;
@@ -33,80 +36,80 @@
         .control-buttons button:hover {
             background-color: #0056b3;
         }
-        .board {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px;
-            width: 100%;
-            max-width: 400px;
-        }
-        .row {
+        .player-section {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            width: 100%;
+            width: 90%;
+            margin: 10px 0;
+            border-top: 2px solid #007bff;
+            padding-top: 10px;
         }
         .player {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 90px;
-            height: 150px;
-            margin: 10px;
-            cursor: pointer;
-            border: 2px solid #ddd;
+            width: 22%;
+            border: 1px solid #ccc;
             border-radius: 10px;
             padding: 5px;
-            background-color: #f8f9fa;
-            transition: background-color 0.3s;
-            text-align: center;
-        }
-        .player:hover {
-            background-color: #e9ecef;
-        }
-        .player.active {
-            background-color: #007bff;
-            color: white;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .player h2 {
-            font-size: 18px;
-            margin: 5px 0;
+            font-size: 16px;
+            margin-bottom: 5px;
         }
         .player .remaining {
             font-size: 14px;
-            margin-top: 5px;
-            color: #555;
+            margin-bottom: 10px;
         }
         .player .history,
         .player .total-played {
             font-size: 14px;
             color: #000;
             text-align: left;
-            width: 90%;
-            margin-top: 5px;
-            overflow-y: auto;
+            width: 100%;
             height: 60px;
+            overflow-y: auto;
+            border-top: 1px solid #ddd;
+            margin-top: 5px;
         }
         .center-board {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 400px;
+            width: 90%;
+            margin: 10px 0;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .button-group button {
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #6c757d;
+            color: white;
+        }
+        .button-group button:hover {
+            background-color: #495057;
         }
         .card-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 5px;
-            margin: 10px 0;
         }
         .card {
-            width: 60px;
-            height: 60px;
-            font-size: 18px;
+            width: 50px;
+            height: 50px;
+            font-size: 16px;
             font-weight: bold;
-            line-height: 60px;
+            line-height: 50px;
             text-align: center;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -117,90 +120,61 @@
             background-color: #999;
             color: white;
         }
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 10px 0;
-            gap: 5px;
-        }
-        .button-group button {
-            padding: 10px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .pairs { background-color: #1e90ff; color: white; }
-        .triplets { background-color: #32cd32; color: white; }
-        .sequence { background-color: #ffa500; color: white; }
-        .bomb { background-color: #dc143c; color: white; }
-        .record {
-            background-color: #ff4500; color: white;
-        }
-        .record:hover {
-            background-color: #d03c00;
-        }
-        .active {
-            box-shadow: 0 0 10px 2px #666;
-        }
-        .round {
-            font-size: 16px;
-            margin-top: 5px;
-            color: #666;
-        }
     </style>
 </head>
 <body>
+    <!-- 标题区域 -->
     <h1>双扣记牌器</h1>
     <div class="control-buttons">
         <button onclick="undo()">撤销</button>
         <button onclick="redo()">前进</button>
         <button onclick="reset()">重置</button>
-        <button onclick="activateSubtractMode()">减牌</button>
     </div>
-    <div class="round" id="round">当前轮次：第 1 轮</div>
-    <!-- 玩家布局 -->
-    <div class="board">
-        <div class="player" id="north" onclick="recordPlay('north')">
-            <h2>北家（<span id="remaining-north">27</span>）</h2>
-            <div class="history" id="history-north"></div>
-            <div class="total-played" id="total-north">已打出：无</div>
+    <!-- 玩家信息区 -->
+    <div class="player-section">
+        <div class="player" id="opposite" onclick="recordPlay('opposite')">
+            <h2>对家（<span id="remaining-opposite">27</span>）</h2>
+            <div class="history" id="history-opposite"></div>
+            <div class="total-played" id="total-opposite">已打出：无</div>
         </div>
-        <div class="row">
-            <div class="player" id="west" onclick="recordPlay('west')">
-                <h2>西家（<span id="remaining-west">27</span>）</h2>
-                <div class="history" id="history-west"></div>
-                <div class="total-played" id="total-west">已打出：无</div>
-            </div>
-            <div class="center-board">
-                <div class="card-board" id="card-board">
-                    <!-- 卡牌动态生成 -->
-                </div>
-                <div class="button-group">
-                    <button class="pairs" onclick="togglePlayType(this, '对子', '#1e90ff', 2)">对子</button>
-                    <button class="triplets" onclick="togglePlayType(this, '三张', '#32cd32', 3)">三张</button>
-                    <button class="sequence" onclick="togglePlayType(this, '一条龙', '#ffa500')">一条龙</button>
-                    <button class="sequence" onclick="togglePlayType(this, '连对', '#1e90ff', 2)">连对</button>
-                    <button class="bomb" onclick="togglePlayType(this, '炸弹4', '#dc143c', 4)">炸弹4</button>
-                    <button class="bomb" onclick="togglePlayType(this, '炸弹5', '#dc143c', 5)">炸弹5</button>
-                    <button class="bomb" onclick="togglePlayType(this, '炸弹6', '#dc143c', 6)">炸弹6</button>
-                    <button class="bomb" onclick="togglePlayType(this, '炸弹7', '#dc143c', 7)">炸弹7</button>
-                    <button class="bomb" onclick="togglePlayType(this, '炸弹8', '#dc143c', 8)">炸弹8</button>
-                </div>
-            </div>
-            <div class="player" id="east" onclick="recordPlay('east')">
-                <h2>东家（<span id="remaining-east">27</span>）</h2>
-                <div class="history" id="history-east"></div>
-                <div class="total-played" id="total-east">已打出：无</div>
-            </div>
+        <div class="player" id="left" onclick="recordPlay('left')">
+            <h2>左家（<span id="remaining-left">27</span>）</h2>
+            <div class="history" id="history-left"></div>
+            <div class="total-played" id="total-left">已打出：无</div>
         </div>
-        <div class="player" id="south" onclick="recordPlay('south')">
-            <h2>南家（<span id="remaining-south">27</span>）</h2>
-            <div class="history" id="history-south"></div>
-            <div class="total-played" id="total-south">已打出：无</div>
+        <div class="player" id="right" onclick="recordPlay('right')">
+            <h2>右家（<span id="remaining-right">27</span>）</h2>
+            <div class="history" id="history-right"></div>
+            <div class="total-played" id="total-right">已打出：无</div>
+        </div>
+        <div class="player" id="self" onclick="recordPlay('self')">
+            <h2>自己（<span id="remaining-self">27</span>）</h2>
+            <div class="history" id="history-self"></div>
+            <div class="total-played" id="total-self">已打出：无</div>
         </div>
     </div>
+    <!-- 按钮和扑克牌区 -->
+    <div class="center-board">
+        <div class="button-group">
+            <button onclick="togglePlayType(this, '对子', '#1e90ff', 2)">对子</button>
+            <button onclick="togglePlayType(this, '三张', '#32cd32', 3)">三张</button>
+            <button onclick="togglePlayType(this, '一条龙', '#ffa500')">一条龙</button>
+            <button onclick="togglePlayType(this, '连对', '#1e90ff', 2)">连对</button>
+            <button onclick="activateSubtractMode()">减牌</button>
+        </div>
+        <div class="button-group">
+            <button onclick="togglePlayType(this, '炸弹4', '#dc143c', 4)">炸弹4</button>
+            <button onclick="togglePlayType(this, '炸弹5', '#dc143c', 5)">炸弹5</button>
+            <button onclick="togglePlayType(this, '炸弹6', '#dc143c', 6)">炸弹6</button>
+            <button onclick="togglePlayType(this, '炸弹7', '#dc143c', 7)">炸弹7</button>
+            <button onclick="togglePlayType(this, '炸弹8', '#dc143c', 8)">炸弹8</button>
+        </div>
+        <div class="card-board" id="card-board">
+            <!-- 卡牌动态生成 -->
+        </div>
+    </div>
+
+  
 
     <script>
         const ranks = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2", "小王", "大王"];
